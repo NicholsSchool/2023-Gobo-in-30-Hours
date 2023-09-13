@@ -117,11 +117,11 @@ public class FeedForwardTeleop extends OpMode implements Constants
 
         if( gamepad1.left_trigger > 0.1 )
         {
-            robotSystem.driveTest(0.5);
+            robotSystem.driveTest(.75);
         }
         else if( gamepad1.right_trigger > 0.1 )
         {
-            robotSystem.driveTest(-0.5);
+            robotSystem.driveTest(-.75);
         }
         else
             robotSystem.driveTest(0.0);

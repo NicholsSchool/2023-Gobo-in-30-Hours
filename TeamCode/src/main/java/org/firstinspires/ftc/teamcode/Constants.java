@@ -14,14 +14,20 @@ interface Constants {
     public static final double BACK_RIGHT_FF = 12.5;
 
     /** The Front Left FeedForward Constant */
-    public static final double FRONT_LEFT_FF = 13.2;
+    public static final double FRONT_LEFT_FF = 13.0;
 
     /** The Front Right FeedForward Constant */
-    public static final double FRONT_RIGHT_FF = 13.5;
+    public static final double FRONT_RIGHT_FF = 13.3;
 
     /** The max motor power used for driving */
-    public static final double DRIVE_LIMIT = 0.6;
+    public static final double DRIVE_LIMIT = 0.75;
 
     /** The max motor power used for turning */
-    public static final double TURN_LIMIT = 0.3;
+    public static final double TURN_LIMIT = .25;
+
+    /** The maximum error deemed ok for auto alignment */
+    public static final double ANGLE_THRESHOLD = .25;
+
+    /** The Proportional constant used for auto alignment */
+    public static final double TURN_P = .2;
 }

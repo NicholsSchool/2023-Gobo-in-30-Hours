@@ -11,6 +11,8 @@ public class GenesisTeleop extends OpMode implements Constants
     // Declare OpMode members.
     private ElapsedTime runtime;
     private RobotSystem robotSystem;
+    private boolean autoAlign;
+    private double desiredAngle;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -20,6 +22,8 @@ public class GenesisTeleop extends OpMode implements Constants
         // Initialize Fields
         robotSystem = new RobotSystem();
         robotSystem.init(hardwareMap, IS_BLUE_ALLIANCE);
+        autoAlign = true;
+        desiredAngle = 90.0;
 
         // Initialize Runtime
         runtime = new ElapsedTime();
@@ -47,10 +51,19 @@ public class GenesisTeleop extends OpMode implements Constants
      */
     @Override
     public void loop() {
-        //TODO: do robot oriented, then field oriented
-        //TODO: then do autoAlign, then do odometry, check at each stage that red works too
+        //TODO: fix autoAlign, then do odometry, check at each stage that red works too
         //TODO: Then do spline thingy
         //TODO: need config ids for odometry
+        if(gamepad1.y)
+            desiredAngle = 90.0;
+        else if(gamepad1.b)
+            desiredAngle = 0.0;
+        else if(gamepad1.a)
+            desiredAngle = -90.0;
+        else if(gamepad1.x)
+            desiredAngle = -180.0;
+
+        autoAlign = gamepad1.left_trigger == 0.0 && gamepad1.right_trigger == 0.0;
 
         double[] gamepadValues = robotSystem.getGamepadValues(gamepad1);
         double power = gamepadValues[0];
@@ -58,7 +71,7 @@ public class GenesisTeleop extends OpMode implements Constants
         double turn = gamepadValues[2];
         double headingDegrees = robotSystem.getFieldHeading();
 
-        robotSystem.drive(power, angle, turn);
+        robotSystem.drive(power, angle, turn, autoAlign, desiredAngle);
 
         // Show Telemetry
         double[] motorSpeeds = robotSystem.getMotorVelocities();

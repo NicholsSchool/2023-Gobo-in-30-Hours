@@ -49,6 +49,12 @@ public class RobotSystem implements Constants {
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        // Set Zero Power Behavior
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         // Stop and Reset Encoders
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -88,18 +94,40 @@ public class RobotSystem implements Constants {
      * @param angle the angle to drive at in degrees
      * @param turn the turning power
      */
-    public void drive(double power, double angle, double turn)
+    public void drive(double power, double angle, double turn, boolean autoAlign, double desiredAngle)
     {
         power = Range.clip(power, -DRIVE_LIMIT, DRIVE_LIMIT);
         turn = Range.clip(turn, -TURN_LIMIT, TURN_LIMIT);
 
-        double corner1 = power * Math.sin(Math.toRadians(angle - 45.0));
-        double corner2 = power * Math.sin(Math.toRadians(angle + 45.0));
+        double heading = this.getFieldHeading();
+        if(autoAlign)
+            turn = this.autoAlign(desiredAngle, heading);
+
+        double corner1 = power * Math.sin(Math.toRadians(angle - 45.0 + 90 - heading));
+        double corner2 = power * Math.sin(Math.toRadians(angle + 45.0 + 90 - heading));
 
         backLeft.setPower(corner1 + turn);
         backRight.setPower(corner2 - turn);
         frontLeft.setPower(corner2 + turn);
         frontRight.setPower(corner1 - turn);
+    }
+
+    /**
+     * Corrects Robot Heading
+     *
+     * @return the turn speed to replace the chosen turn speed
+     */
+    public double autoAlign(double desiredAngle, double heading) {
+        double difference = desiredAngle - heading;
+        if (difference < -180.0)
+            difference += 360.0;
+        else if (difference >= 180.0)
+            difference -= 360.0;
+
+        if (Math.abs(difference) < ANGLE_THRESHOLD)
+            return 0.0;
+        else
+            return Range.clip(difference * TURN_P, -TURN_LIMIT, TURN_LIMIT);
     }
 
     /**
