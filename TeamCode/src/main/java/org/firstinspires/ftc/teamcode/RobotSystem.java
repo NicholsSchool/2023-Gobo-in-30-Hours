@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -15,8 +16,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 public class RobotSystem implements Constants {
     private BHI260IMU imu;
-    private DcMotorEx frontLeft, frontRight, backLeft, backRight;
+    DcMotorEx frontLeft, frontRight, backLeft, backRight;
     private boolean isBlueAlliance;
+
     public void init(HardwareMap hwMap, boolean isBlueAlliance)
     {
         // Initialize Variables
@@ -66,13 +68,38 @@ public class RobotSystem implements Constants {
         frontRight.setVelocityPIDFCoefficients(0, 0, 0, FRONT_RIGHT_FF);
     }
 
-    //TODO: Make the real drive method
+    /**
+     * A method used to tune FeedForward Values, spins motors at equal power
+     *
+     * @param power the power to spin motors at
+     */
     public void driveTest(double power)
     {
         backLeft.setPower(power);
         backRight.setPower(power);
         frontLeft.setPower(power);
         frontRight.setPower(power);
+    }
+
+    /**
+     * Drives the robot field-oriented
+     *
+     * @param power the driving power
+     * @param angle the angle to drive at in degrees
+     * @param turn the turning power
+     */
+    public void drive(double power, double angle, double turn)
+    {
+        power = Range.clip(power, -DRIVE_LIMIT, DRIVE_LIMIT);
+        turn = Range.clip(turn, -TURN_LIMIT, TURN_LIMIT);
+
+        double corner1 = power * Math.sin(Math.toRadians(angle - 45.0));
+        double corner2 = power * Math.sin(Math.toRadians(angle + 45.0));
+
+        backLeft.setPower(corner1 + turn);
+        backRight.setPower(corner2 - turn);
+        frontLeft.setPower(corner2 + turn);
+        frontRight.setPower(corner1 - turn);
     }
 
     /**
@@ -86,7 +113,7 @@ public class RobotSystem implements Constants {
     {
         double x = gamepad.left_stick_x;
         double y = -gamepad.left_stick_y;
-        double power = Math.sqrt(x * x + y * y);
+        double power = Range.clip(Math.sqrt(x * x + y * y), 0.0, 1.0);
         double angle = Math.toDegrees(Math.atan2(y, x));
         if(!isBlueAlliance)
         {

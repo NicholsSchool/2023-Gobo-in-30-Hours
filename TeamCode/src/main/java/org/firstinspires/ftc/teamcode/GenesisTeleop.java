@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Teleop: Setup and Testing", group="Teleop")
@@ -46,7 +47,7 @@ public class GenesisTeleop extends OpMode implements Constants
      */
     @Override
     public void loop() {
-        //TODO: Tune Feedforward Control, then do robot oriented, then field oriented
+        //TODO: do robot oriented, then field oriented
         //TODO: then do autoAlign, then do odometry, check at each stage that red works too
         //TODO: Then do spline thingy
         //TODO: need config ids for odometry
@@ -56,6 +57,8 @@ public class GenesisTeleop extends OpMode implements Constants
         double angle = gamepadValues[1];
         double turn = gamepadValues[2];
         double headingDegrees = robotSystem.getFieldHeading();
+
+        robotSystem.drive(power, angle, turn);
 
         // Show Telemetry
         double[] motorSpeeds = robotSystem.getMotorVelocities();
