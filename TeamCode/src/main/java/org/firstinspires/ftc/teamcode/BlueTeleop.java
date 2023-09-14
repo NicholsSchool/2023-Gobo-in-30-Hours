@@ -2,11 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="Teleop: Setup and Testing", group="Teleop")
-public class GenesisTeleop extends OpMode implements Constants
+@TeleOp(name="Teleop: Blue", group="Teleop")
+public class BlueTeleop extends OpMode implements Constants
 {
     // Declare OpMode members.
     private ElapsedTime runtime;
@@ -22,7 +21,7 @@ public class GenesisTeleop extends OpMode implements Constants
     public void init() {
         // Initialize Fields
         robotSystem = new RobotSystem();
-        robotSystem.init(hardwareMap, IS_BLUE_ALLIANCE);
+        robotSystem.init(hardwareMap, IS_BLUE_ALLIANCE, 0.0, 0.0);
         autoAlign = true;
         desiredAngle = 90.0;
         lastTurn = 0.0;
@@ -86,7 +85,7 @@ public class GenesisTeleop extends OpMode implements Constants
         // Show Telemetry
         double[] motorSpeeds = robotSystem.getMotorVelocities();
         double[] encoderValues = robotSystem.getPositions();
-        double coordinates = robotSystem.getXY()
+        double[] coordinates = robotSystem.getXY();
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Input Power", power);
         telemetry.addData("Input Angle", angle);

@@ -25,9 +25,9 @@ public class RobotSystem implements Constants {
     {
         // Initialize Variables
         this.isBlueAlliance = isBlueAlliance;
-        this.leftTicks = 0.0;
-        this.rightTicks = 0.0;
-        this.strafeTicks = 0.0;
+        this.leftTicks = 0;
+        this.rightTicks = 0;
+        this.strafeTicks = 0;
         this.x = x;
         this.y = y;
 
@@ -58,10 +58,9 @@ public class RobotSystem implements Constants {
         backRight.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        //TODO: correct dead wheel directions
-        leftDead.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftDead.setDirection(DcMotorSimple.Direction.REVERSE);
         rightDead.setDirection(DcMotorSimple.Direction.FORWARD);
-        strafeDead.setDirection(DcMotorSimple.Direction.FORWARD);
+        strafeDead.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Set Zero Power Behavior
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -119,25 +118,16 @@ public class RobotSystem implements Constants {
      */
     public void drive(double power, double angle, double turn, boolean autoAlign, double desiredAngle)
     {
-        power = Range.clip(power, -1, 1);
         turn = Range.clip(turn, -TURN_LIMIT, TURN_LIMIT);
 
         double heading = this.getFieldHeading();
         if(autoAlign)
             turn = this.autoAlign(desiredAngle, heading);
 
+        power = Range.clip(power, -MAX_LIMIT + Math.abs(turn), MAX_LIMIT - Math.abs(turn));
+
         double corner1 = power * Math.sin(Math.toRadians(angle - 45.0 + 90 - heading));
         double corner2 = power * Math.sin(Math.toRadians(angle + 45.0 + 90 - heading));
-
-        double scaling = 1.0;
-        if( corner1 > DRIVE_LIMIT || corner1 < -DRIVE_LIMIT)
-            scaling = Math.abs(DRIVE_LIMIT / corner1);
-        corner1 *= scaling;
-        corner2 *= scaling;
-        if( corner2 > DRIVE_LIMIT || corner2 < -DRIVE_LIMIT)
-            scaling = Math.abs(DRIVE_LIMIT / corner2);
-        corner1 *= scaling;
-        corner2 *= scaling;
 
         backLeft.setPower(corner1 + turn);
         backRight.setPower(corner2 - turn);
@@ -268,6 +258,5 @@ public class RobotSystem implements Constants {
      */
     public double[] getXY() {
         return new double[]{this.x, this.y};
-    }
     }
 }

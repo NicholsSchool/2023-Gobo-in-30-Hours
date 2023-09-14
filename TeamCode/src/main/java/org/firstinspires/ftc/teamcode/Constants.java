@@ -19,14 +19,14 @@ interface Constants {
     /** The Front Right FeedForward Constant */
     public static final double FRONT_RIGHT_FF = 13.3;
 
-    /** The max motor power used for driving */
-    public static final double DRIVE_LIMIT = 0.7;
+    /** The max motor power applied to any drive motor */
+    public static final double MAX_LIMIT = 1.0;
 
     /** The max motor power used for turning */
     public static final double TURN_LIMIT = .25;
 
     /** The maximum error deemed ok for auto alignment */
-    public static final double ANGLE_THRESHOLD = .5;
+    public static final double ANGLE_THRESHOLD = 0.5;
 
     /** The Proportional constant used for auto alignment */
     public static final double TURN_P = .019;
@@ -41,8 +41,8 @@ interface Constants {
     public static final double INCHES_PER_TICK = DEAD_DIAMETER * Math.PI / TICKS_PER_REV;
 
     /** The Multiplier to forward distance tracking */
-    public static final double FORWARD_ODOMETRY_CORRECTION = 1.0;
+    public static final double FORWARD_ODOMETRY_CORRECTION = 1.02696500287;
 
     /** The Multiplier to strafe distance tracking */
-    public static final double STRAFE_ODOMETRY_CORRECTION = 1.0;
+    public static final double STRAFE_ODOMETRY_CORRECTION = 1.15260785576;
 }

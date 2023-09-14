@@ -21,7 +21,7 @@ public class FeedForwardTeleop extends OpMode implements Constants
     public void init() {
         // Initialize Fields
         robotSystem = new RobotSystem();
-        robotSystem.init(hardwareMap, IS_BLUE_ALLIANCE);
+        robotSystem.init(hardwareMap, IS_BLUE_ALLIANCE, 0.0, 0.0);
         motor = "frontRight";
         increment = 0.1;
 
