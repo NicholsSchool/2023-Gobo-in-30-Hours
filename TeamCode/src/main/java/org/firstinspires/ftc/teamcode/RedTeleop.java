@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="Teleop: Blue", group="Teleop")
-public class BlueTeleop extends OpMode implements Constants
+@TeleOp(name="Teleop: Red", group="Teleop")
+public class RedTeleop extends OpMode implements Constants
 {
     // Declare OpMode members.
     private ElapsedTime runtime;
@@ -21,9 +21,9 @@ public class BlueTeleop extends OpMode implements Constants
     public void init() {
         // Initialize Fields
         robotSystem = new RobotSystem();
-        robotSystem.init(hardwareMap, IS_BLUE_ALLIANCE, 0.0, 0.0);
+        robotSystem.init(hardwareMap, !IS_BLUE_ALLIANCE, 0.0, 0.0);
         autoAlign = true;
-        desiredAngle = 90.0;
+        desiredAngle = -90.0;
         lastTurn = 0.0;
 
         // Initialize Runtime
@@ -52,7 +52,7 @@ public class BlueTeleop extends OpMode implements Constants
      */
     @Override
     public void loop() {
-         autoAlign = gamepad1.left_trigger == 0.0 && gamepad1.right_trigger == 0.0;
+        autoAlign = gamepad1.left_trigger == 0.0 && gamepad1.right_trigger == 0.0;
 
         double[] gamepadValues = robotSystem.getGamepadValues(gamepad1);
         double power = gamepadValues[0];
@@ -64,12 +64,12 @@ public class BlueTeleop extends OpMode implements Constants
             desiredAngle = robotSystem.getFieldHeading();
 
         if(gamepad1.y)
-            desiredAngle = 90.0;
-        else if(gamepad1.b)
-            desiredAngle = 0.0;
-        else if(gamepad1.a)
             desiredAngle = -90.0;
         else if(gamepad1.x)
+            desiredAngle = 0.0;
+        else if(gamepad1.a)
+            desiredAngle = 90.0;
+        else if(gamepad1.b)
             desiredAngle = -180.0;
 
         robotSystem.drive(power, angle, turn, autoAlign, desiredAngle);
