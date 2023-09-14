@@ -30,4 +30,19 @@ interface Constants {
 
     /** The Proportional constant used for auto alignment */
     public static final double TURN_P = .019;
+
+    /** Ticks per revolution of the dead wheels */
+    public static final int TICKS_PER_REV = 8192;
+
+    /** Approximate Diameter of our Dead Wheels */
+    public static final double DEAD_DIAMETER = 2.5;
+
+    /** Inches driven per encoder tick of a dead wheel */
+    public static final double INCHES_PER_TICK = DEAD_DIAMETER * Math.PI / TICKS_PER_REV;
+
+    /** The Multiplier to forward distance tracking */
+    public static final double FORWARD_ODOMETRY_CORRECTION = 1.0;
+
+    /** The Multiplier to strafe distance tracking */
+    public static final double STRAFE_ODOMETRY_CORRECTION = 1.0;
 }

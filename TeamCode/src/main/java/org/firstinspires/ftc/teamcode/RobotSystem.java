@@ -16,13 +16,20 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 public class RobotSystem implements Constants {
     private BHI260IMU imu;
-    DcMotorEx frontLeft, frontRight, backLeft, backRight;
+    DcMotorEx frontLeft, frontRight, backLeft, backRight,leftDead, rightDead, strafeDead;
+    private int leftTicks, rightTicks, strafeTicks;
+    private double x, y;
     private boolean isBlueAlliance;
 
-    public void init(HardwareMap hwMap, boolean isBlueAlliance)
+    public void init(HardwareMap hwMap, boolean isBlueAlliance, double x, double y)
     {
         // Initialize Variables
         this.isBlueAlliance = isBlueAlliance;
+        this.leftTicks = 0.0;
+        this.rightTicks = 0.0;
+        this.strafeTicks = 0.0;
+        this.x = x;
+        this.y = y;
 
         // Instantiating IMU Parameters, setting angleUnit...
         BHI260IMU.Parameters params = new BHI260IMU.Parameters(
@@ -42,30 +49,46 @@ public class RobotSystem implements Constants {
         backRight = hwMap.get(DcMotorEx.class, "backRight");
         frontLeft = hwMap.get(DcMotorEx.class, "frontLeft");
         frontRight = hwMap.get(DcMotorEx.class, "frontRight");
+        leftDead = hwMap.get(DcMotorEx.class, "leftDead");
+        rightDead = hwMap.get(DcMotorEx.class, "rightDead");
+        strafeDead = hwMap.get(DcMotorEx.class, "strafeDead");
 
         // Invert Motors
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        //TODO: correct dead wheel directions
+        leftDead.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightDead.setDirection(DcMotorSimple.Direction.FORWARD);
+        strafeDead.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Set Zero Power Behavior
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftDead.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightDead.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        strafeDead.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Stop and Reset Encoders
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftDead.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDead.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        strafeDead.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Set Motor RunModes
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftDead.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightDead.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        strafeDead.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Set Motor FF Coefficients
         backLeft.setVelocityPIDFCoefficients(0, 0, 0, BACK_LEFT_FF);
@@ -189,6 +212,29 @@ public class RobotSystem implements Constants {
     }
 
     /**
+     * Update the robot's odometry, call in each loop cycle before updateEncoderPositions()
+     */
+    public void updateCoordinates() {
+        double heading = Math.toRadians(this.getFieldHeading());
+        double deltaX = (strafeDead.getCurrentPosition() - strafeTicks) * INCHES_PER_TICK * STRAFE_ODOMETRY_CORRECTION;
+        double deltaY = ( (leftDead.getCurrentPosition() - leftTicks ) +
+                ( rightDead.getCurrentPosition() - rightTicks ) ) * .5 * INCHES_PER_TICK * FORWARD_ODOMETRY_CORRECTION;
+
+        y += -deltaX * Math.cos(heading) + deltaY * Math.sin(heading);
+        x += deltaX * Math.sin(heading) + deltaY * Math.cos(heading);
+    }
+
+    /**
+     * Updates encoder positions, call at the end of every loop
+     */
+    public void updateEncoderPositions() {
+        
+        leftTicks = leftDead.getCurrentPosition();
+        rightTicks = rightDead.getCurrentPosition();
+        strafeTicks = strafeDead.getCurrentPosition();
+    }
+
+    /**
      * Get Motor Velocities
      *
      * @return in order: backLeft, backRight, frontLeft, frontRight speeds
@@ -196,10 +242,32 @@ public class RobotSystem implements Constants {
     public double[] getMotorVelocities()
     {
         return new double[]{
-                backLeft.getVelocity(),
-                backRight.getVelocity(),
-                frontLeft.getVelocity(),
-                frontRight.getVelocity()
+            backLeft.getVelocity(),
+            backRight.getVelocity(),
+            frontLeft.getVelocity(),
+            frontRight.getVelocity()
         };
+    }
+
+    /**
+     * Get the dead wheel total encoder values
+     *
+     * @return the dead wheel encoder values
+     */
+    public double[] getPositions()
+    {
+        return new double[]{leftDead.getCurrentPosition(),
+                            rightDead.getCurrentPosition(),
+                            strafeDead.getCurrentPosition()};
+    }
+
+    /**
+     * get the robot coordinates
+     *
+     * @return the x and y value of the center of the bot
+     */
+    public double[] getXY() {
+        return new double[]{this.x, this.y};
+    }
     }
 }

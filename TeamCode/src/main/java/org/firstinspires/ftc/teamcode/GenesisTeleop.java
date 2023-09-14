@@ -79,10 +79,14 @@ public class GenesisTeleop extends OpMode implements Constants
             desiredAngle = -180.0;
 
         robotSystem.drive(power, angle, turn, autoAlign, desiredAngle);
+        robotSystem.updateCoordinates();
+        robotSystem.updateEncoderPositions();
         lastTurn = turn;
 
         // Show Telemetry
         double[] motorSpeeds = robotSystem.getMotorVelocities();
+        double[] encoderValues = robotSystem.getPositions();
+        double coordinates = robotSystem.getXY()
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Input Power", power);
         telemetry.addData("Input Angle", angle);
@@ -92,6 +96,11 @@ public class GenesisTeleop extends OpMode implements Constants
         telemetry.addData("BackRight Vel", motorSpeeds[1]);
         telemetry.addData("FrontLeft Vel", motorSpeeds[2]);
         telemetry.addData("FrontRight Vel", motorSpeeds[3]);
+        telemetry.addData("leftDead Ticks", encoderValues[0]);
+        telemetry.addData("rightDead Ticks", encoderValues[1]);
+        telemetry.addData("strafeDead Ticks", encoderValues[2]);
+        telemetry.addData("X Coordinate", coordinates[0]);
+        telemetry.addData("Y Coordinate", coordinates[1]);
     }
 
     /*
