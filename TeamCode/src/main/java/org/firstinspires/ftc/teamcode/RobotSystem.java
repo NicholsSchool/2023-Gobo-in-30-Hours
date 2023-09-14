@@ -96,7 +96,7 @@ public class RobotSystem implements Constants {
      */
     public void drive(double power, double angle, double turn, boolean autoAlign, double desiredAngle)
     {
-        power = Range.clip(power, -DRIVE_LIMIT, DRIVE_LIMIT);
+        power = Range.clip(power, -1, 1);
         turn = Range.clip(turn, -TURN_LIMIT, TURN_LIMIT);
 
         double heading = this.getFieldHeading();
@@ -105,6 +105,16 @@ public class RobotSystem implements Constants {
 
         double corner1 = power * Math.sin(Math.toRadians(angle - 45.0 + 90 - heading));
         double corner2 = power * Math.sin(Math.toRadians(angle + 45.0 + 90 - heading));
+
+        double scaling = 1.0;
+        if( corner1 > DRIVE_LIMIT || corner1 < -DRIVE_LIMIT)
+            scaling = Math.abs(DRIVE_LIMIT / corner1);
+        corner1 *= scaling;
+        corner2 *= scaling;
+        if( corner2 > DRIVE_LIMIT || corner2 < -DRIVE_LIMIT)
+            scaling = Math.abs(DRIVE_LIMIT / corner2);
+        corner1 *= scaling;
+        corner2 *= scaling;
 
         backLeft.setPower(corner1 + turn);
         backRight.setPower(corner2 - turn);
@@ -118,7 +128,7 @@ public class RobotSystem implements Constants {
      * @return the turn speed to replace the chosen turn speed
      */
     public double autoAlign(double desiredAngle, double heading) {
-        double difference = desiredAngle - heading;
+        double difference = heading - desiredAngle;
         if (difference < -180.0)
             difference += 360.0;
         else if (difference >= 180.0)
