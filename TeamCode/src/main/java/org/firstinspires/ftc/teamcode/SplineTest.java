@@ -4,15 +4,14 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="Teleop: Red", group="Teleop")
-public class RedTeleop extends OpMode implements Constants
+@TeleOp(name="Teleop: Spline Test", group="Teleop")
+public class SplineTest extends OpMode implements Constants
 {
     // Declare OpMode members.
     private ElapsedTime runtime;
     private RobotSystem robotSystem;
     private boolean autoAlign;
     private double desiredAngle;
-    private double lastTurn;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -21,10 +20,9 @@ public class RedTeleop extends OpMode implements Constants
     public void init() {
         // Initialize Fields
         robotSystem = new RobotSystem();
-        robotSystem.init(hardwareMap, !IS_BLUE_ALLIANCE, 0.0, 0.0);
+        robotSystem.init(hardwareMap, IS_BLUE_ALLIANCE, 36.0, 12.0);
         autoAlign = true;
-        desiredAngle = -90.0;
-        lastTurn = 0.0;
+        desiredAngle = 90.0;
 
         // Initialize Runtime
         runtime = new ElapsedTime();
@@ -52,37 +50,27 @@ public class RedTeleop extends OpMode implements Constants
      */
     @Override
     public void loop() {
-        autoAlign = gamepad1.left_trigger == 0.0 && gamepad1.right_trigger == 0.0;
+        double[] coordinates = robotSystem.getXY();
 
-        double[] gamepadValues = robotSystem.getGamepadValues(gamepad1);
-        double power = gamepadValues[0];
-        double angle = gamepadValues[1];
-        double turn = gamepadValues[2];
-        double headingDegrees = robotSystem.getFieldHeading();
+        double power = 0.5;
+        double slope = (14 * Math.pow(Math.E, -.1 * (coordinates[0] - 86.0)))
+                /(Math.pow(Math.pow(Math.E, -.1 * (coordinates[0] - 86.0)) + 1, 2) );
 
-        if( lastTurn != 0.0 && turn == 0.0 )
-            desiredAngle = robotSystem.getFieldHeading();
+        if(coordinates[0] > 120)
+            power = 0.0;
 
-        if(gamepad1.y)
-            desiredAngle = -90.0;
-        else if(gamepad1.x)
-            desiredAngle = 0.0;
-        else if(gamepad1.a)
-            desiredAngle = 90.0;
-        else if(gamepad1.b)
-            desiredAngle = -180.0;
+        double theta = Math.toDegrees(Math.atan(slope));
 
-        robotSystem.drive(power, angle, turn, autoAlign, desiredAngle);
+        robotSystem.drive(power, theta, 0.0, autoAlign, desiredAngle);
+
         robotSystem.updateCoordinates();
         robotSystem.updateEncoderPositions();
-        lastTurn = turn;
 
         // Show Telemetry
-        double[] motorSpeeds = robotSystem.getMotorVelocities();
-        double[] encoderValues = robotSystem.getPositions();
-        double[] coordinates = robotSystem.getXY();
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Robot Field Heading", headingDegrees);
+        telemetry.addData("power", power);
+        telemetry.addData("slope", slope);
+        telemetry.addData("theta", theta);
         telemetry.addData("X Coordinate", coordinates[0]);
         telemetry.addData("Y Coordinate", coordinates[1]);
     }

@@ -82,17 +82,7 @@ public class BlueTeleop extends OpMode implements Constants
         double[] encoderValues = robotSystem.getPositions();
         double[] coordinates = robotSystem.getXY();
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Input Power", power);
-        telemetry.addData("Input Angle", angle);
-        telemetry.addData("Input Turn", turn);
         telemetry.addData("Robot Field Heading", headingDegrees);
-        telemetry.addData("BackLeft Vel", motorSpeeds[0]);
-        telemetry.addData("BackRight Vel", motorSpeeds[1]);
-        telemetry.addData("FrontLeft Vel", motorSpeeds[2]);
-        telemetry.addData("FrontRight Vel", motorSpeeds[3]);
-        telemetry.addData("leftDead Ticks", encoderValues[0]);
-        telemetry.addData("rightDead Ticks", encoderValues[1]);
-        telemetry.addData("strafeDead Ticks", encoderValues[2]);
         telemetry.addData("X Coordinate", coordinates[0]);
         telemetry.addData("Y Coordinate", coordinates[1]);
     }
