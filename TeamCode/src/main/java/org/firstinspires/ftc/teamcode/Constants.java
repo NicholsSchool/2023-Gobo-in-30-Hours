@@ -46,6 +46,6 @@ interface Constants {
     /** The Multiplier to strafe distance tracking */
     public static final double STRAFE_ODOMETRY_CORRECTION = 1.15260785576;
 
-    /** The Multiplier the slope correction for splining */
-    public static final double SPLINE_CORRECT = 0.05;
+    /** The Multiplier the slope correction for auto pathing */
+    public static final double SPLINE_CORRECT = 0.15;
 }

@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 public class RobotSystem implements Constants {
     private BHI260IMU imu;
-    DcMotorEx frontLeft, frontRight, backLeft, backRight,leftDead, rightDead, strafeDead;
+    DcMotorEx frontLeft, frontRight, backLeft, backRight, leftDead, rightDead, strafeDead;
     private int leftTicks, rightTicks, strafeTicks;
     private double x, y;
     private boolean isBlueAlliance;
@@ -58,9 +58,9 @@ public class RobotSystem implements Constants {
         backRight.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftDead.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightDead.setDirection(DcMotorSimple.Direction.FORWARD);
-        strafeDead.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftDead.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightDead.setDirection(DcMotorSimple.Direction.REVERSE);
+        strafeDead.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Set Zero Power Behavior
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

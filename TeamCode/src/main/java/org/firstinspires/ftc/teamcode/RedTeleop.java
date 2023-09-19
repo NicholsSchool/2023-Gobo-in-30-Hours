@@ -78,8 +78,6 @@ public class RedTeleop extends OpMode implements Constants
         lastTurn = turn;
 
         // Show Telemetry
-        double[] motorSpeeds = robotSystem.getMotorVelocities();
-        double[] encoderValues = robotSystem.getPositions();
         double[] coordinates = robotSystem.getXY();
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Robot Field Heading", headingDegrees);

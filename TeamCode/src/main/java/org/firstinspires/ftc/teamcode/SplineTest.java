@@ -20,7 +20,7 @@ public class SplineTest extends OpMode implements Constants
     public void init() {
         // Initialize Fields
         robotSystem = new RobotSystem();
-        robotSystem.init(hardwareMap, IS_BLUE_ALLIANCE, 24.0, 12.0);
+        robotSystem.init(hardwareMap, IS_BLUE_ALLIANCE, -48.0, -48.0);
         autoAlign = true;
         desiredAngle = 90.0;
 
@@ -51,18 +51,18 @@ public class SplineTest extends OpMode implements Constants
     @Override
     public void loop() {
         double[] coordinates = robotSystem.getXY();
-
         double power = 0.5;
-        double turn = 0.0;
-        double desiredY = (Math.pow(72.0, -4) * Math.pow(coordinates[0] - 72, 5) + 72);
-        double slope = Math.pow(coordinates[0] - 72, 4.0) * 5.0 / 26873856 + (desiredY - coordinates[1]) * SPLINE_CORRECT;
+        double turn = 0.5;
+        double desiredY = (72 * Math.pow(48.0, -5) * Math.pow(coordinates[0], 5));
+        double slope = (72 * 5 * Math.pow(48.0, -5) * Math.pow(coordinates[0], 4)) +
+                (desiredY - coordinates[1]) * SPLINE_CORRECT;
 
-        if(coordinates[0] > 124 || coordinates[1] > 124)
-            power = 0.0;
+        if( Math.abs(coordinates[0]) <= -48.0 )
+            slope = coordinates[1] / coordinates[0];
 
         double theta = Math.toDegrees(Math.atan(slope));
 
-        robotSystem.drive(power, theta, turn, autoAlign, desiredAngle);
+        robotSystem.drive(power, theta, turn, false, desiredAngle);
 
         robotSystem.updateCoordinates();
         robotSystem.updateEncoderPositions();
